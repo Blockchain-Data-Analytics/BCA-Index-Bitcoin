@@ -1,0 +1,22 @@
+@startuml transaction
+
+!theme sunlust
+
+class transaction {
+    txid: bytes32
+    hash: string64 (not needed)
+    version: uint32
+    size: uint32 
+    vsize: uint32 
+    weight: uint32
+    locktime: uint32
+    fee: float
+    --from block--
+    blockhash: bytes32
+    blocktime: timestamp
+    --calculated--
+    sumins: float
+    sumouts: float
+}
+
+@enduml

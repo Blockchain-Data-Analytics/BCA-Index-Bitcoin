@@ -1,0 +1,15 @@
+@startuml txout
+
+!theme sunlust
+
+class txout {
+    txid: bytes32
+    n: uint32  ["vout"]
+    value: float
+    script: string (varchar)
+    address: bytes64
+    --consumed in--
+    txconsumed: bytes32
+}
+
+@enduml

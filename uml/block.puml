@@ -1,0 +1,26 @@
+@startuml block
+
+!theme sunlust
+
+class block {
+    hash: bytes32
+    confirmations: uint32 
+    height: uint32 
+    version: int32
+    versionHex: string8 (not needed)
+    merkleroot: bytes32 
+    time: timestamp 
+    mediantime: timestamp
+    nonce: uint32
+    bits: bytes32 
+    difficulty: float 
+    chainwork: bytes32 
+    nTx: uint32 
+    previousblockhash: bytes32 
+    nextblockhash: bytes32 
+    strippedsize: uint32 
+    size: uint32 
+    weight: uint32
+}
+
+@enduml

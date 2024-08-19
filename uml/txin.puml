@@ -1,0 +1,15 @@
+@startuml txin
+
+!theme sunlust
+
+class txin {
+    txid: bytes32
+    txoutid: bytes32
+    vout: uint32
+    script: string
+    sequence: uint32
+    --from output--
+    value: float
+}
+
+@enduml
