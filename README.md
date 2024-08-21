@@ -237,14 +237,14 @@ readings: https://developer.bitcoin.org/reference/transactions.html
 
 ### Block
 
-![Bitcoin block](out/block/block.png)
+![Bitcoin block](out/uml/block/block.png)
 
 The identity is the block "hash".
 
 
 ### Transaction
 
-![Bitcoin transaction](out/tx/transaction.png)
+![Bitcoin transaction](out/uml/tx/transaction.png)
 
 The identity is the "txid".
 
@@ -256,7 +256,7 @@ The field "sumouts" contains the sum of values in the outputs.
 
 ### Transaction Input
 
-![Bitcoin transaction input](out/txin/txin.png)
+![Bitcoin transaction input](out/uml/txin/txin.png)
 
 The identity is the triple: "txid", "txoutid", "vout".
 
@@ -268,7 +268,7 @@ We can copy over from the output its value.
 
 ### Transaction Output
 
-![Bitcoin transaction output](out/txout/txout.png)
+![Bitcoin transaction output](out/uml/txout/txout.png)
 
 The identity is the tuple: "txid", "n".
 
