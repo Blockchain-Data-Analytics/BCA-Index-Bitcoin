@@ -2,4 +2,10 @@
  (public_name json2pg)
  (name json2pg)
  (preprocess (pps lwt_ppx))
- (libraries yojson lwt.unix))
+ (libraries ezcurl-lwt yojson lwt.unix))
+
+(executable
+ (public_name list_blocks)
+ (name lsblocks)
+ ;(preprocess (pps lwt_ppx))
+ (libraries ezcurl-lwt yojson lwt.unix))

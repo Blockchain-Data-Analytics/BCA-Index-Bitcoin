@@ -1,12 +1,28 @@
+open Lwt.Infix
 
 let arg_fp = ref ""
+let arg_bn = ref (-1)
+let arg_bh = ref ""
 
 let argspec =
   [
     ("-f", Arg.Set_string arg_fp, "json file path");
+    ("-n", Arg.Set_int arg_bn, "blockheight");
+    ("-s", Arg.Set_string arg_bh, "blockhash");
   ]
 
 let anon_args_fun _fn = ()
+
+let rpcuser = Sys.getenv "RPCUSER"
+let rpcsecret = Sys.getenv "RPCSECRET"
+let rpcendpoint = Sys.getenv "RPCENDPOINT"
+
+let configuration =
+  Ezcurl_lwt.Config.default |>
+  Ezcurl_lwt.Config.verbose false |> (* DEBUG: set verbose to true *)
+  Ezcurl_lwt.Config.username rpcuser |>
+  Ezcurl_lwt.Config.password rpcsecret
+
 
 let parse_txout jsontxout txid =
   let open Yojson.Basic.Util in
@@ -72,16 +88,40 @@ let parse_block jsonblock =
              blockhash confirmations height version merkleroot time mediantime nonce bits difficulty chainwork ntx previousblockhash nextblockhash strippedsize size weight in
   (String.concat "\n" sql_txs) ^ "\n" ^ sql_block
 
-let parse_json fp =
+let parse_json_file fp =
   let json = Yojson.Basic.from_file fp in
   let open Yojson.Basic.Util in
   let jsonblock = json |> member "result" in
   "BEGIN;\n" ^ parse_block jsonblock ^ "\nCOMMIT;\n"
 
-let main () = Arg.parse argspec anon_args_fun "json2pg: f";
+let parse_json_request blockheight blockhash =
+  let client = Ezcurl_lwt.make ~set_opts:(fun c -> Curl.set_timeout c 30) () in
+  let config = configuration in
+  let _ = Lwt_io.printlf "rpcuser: %s" rpcuser in
+  let headers = [] in
+  let url = rpcendpoint in
+  let args = Printf.sprintf "{\"jsonrpc\": \"1.0\", \"id\": \"curling\", \"method\": \"getblock\", \"params\": [\"%s\", 2]}" blockhash in
+  Ezcurl_lwt.post ~config ~client ~headers ~url ~content:(`String args) ~params:[] () >>= fun response ->
+    match response with
+    | Ok resp ->
+      if resp.code = 200 then
+        let json = Yojson.Basic.from_string resp.body in
+        let jsonblock = json |> Yojson.Basic.Util.member "result" in
+        Lwt.return ("BEGIN;\n" ^ parse_block jsonblock ^ "\nCOMMIT;\n")
+      else
+        let m = Printf.sprintf "bad query %d at blockheight %d for blockhash %s" resp.code blockheight blockhash in
+        Lwt.fail_with m
+    | Error (code, msg) ->
+      let m = Printf.sprintf "error %d : %s" (Curl.int_of_curlCode code) msg in
+      Lwt.fail_with m
+
+let main () = Arg.parse argspec anon_args_fun "json2pg: fns";
   if !arg_fp != ""
-  then Lwt_io.printl (parse_json !arg_fp)
-  else Lwt_io.printl "nothing."
+  then Lwt_io.printl (parse_json_file !arg_fp)
+  else
+    if !arg_bn >= 0 && !arg_bh != ""
+    then parse_json_request !arg_bn !arg_bh >>= Lwt_io.printl
+    else Lwt_io.printl "nothing."
 
 let () = Lwt_main.run (main ())
 

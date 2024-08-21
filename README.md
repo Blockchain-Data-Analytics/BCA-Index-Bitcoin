@@ -275,3 +275,93 @@ The identity is the tuple: "txid", "n".
 A transaction output points to its transaction.
 
 Once consumed, the field "txconsumed" contains the txid of the transaction that this output is an input.
+
+
+## Programs
+
+The programs require the following environment variables to be defined:
+
+* RPCUSER
+* RPCSECRET
+* RPCENDPOINT
+
+
+### List block hashes
+
+```sh
+dune exec bin/lsblocks.exe -- -s 12000 -n 10
+```
+
+will output
+
+```sh
+12000, "0000000011d1d9f1af3e1d038cebba251f933102dbe181d46a7966191b3299ee"
+12001, "000000009bf236ddb082304d8ad0954cd3292792c4958b643f2ec3c1ac3f026b"
+12002, "000000002265b70bfe04bd32c422aa04eb29e772211464e93dc218893fa5e99d"
+12003, "0000000024c4608a5c2ae76e2188aab949ea895fcb3800d48db32c2de73c3e9b"
+12004, "000000009b7046d59900dd75a91dfb0411a48be21198b7c908ab18495d5d4a87"
+12005, "0000000045a447acf5ea6b56333ee6ffd6a7e5ce2a67342340e5bf3ddc8c1c76"
+12006, "0000000001cdf36dc78cf5f1f486064a1c60d873f97ba3af9abc56e973ee1632"
+12007, "0000000080088948c28ae3a808545e7e170d25027f50af3da9249831e414b5d7"
+12008, "00000000a2d14165a587266aad50bf2d69e8f7b1d61dfa462a8e2087ff619126"
+12009, "00000000b56dfd77b27446c5ce37b36136034e4de79eda1c1ba55f743e81a1ce"
+```
+
+### Dump block content and translate to SQL
+
+The program can either read in a JSON file with argument `-f <filepath>`, or
+send a POST request to _bitcoind_ for a blockheight and blockhash.
+
+```sh
+dune exec bin/json2pg.exe -- -n 0 -s 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+```
+
+will generate the following SQL commands:
+
+```sql
+BEGIN;
+INSERT INTO btc_txin (txid,txoutid,vout,sequence,coinbase) VALUES (
+  decode('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b','hex'),
+  decode('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b','hex'),
+  -1,
+  4294967295,
+  '04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73' );
+
+INSERT INTO btc_txout (txid,n,value,address) VALUES (
+  decode('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b','hex'),
+  0,
+  50.000000,
+  '4104678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5fac' );
+
+INSERT INTO btc_transaction (txid,blockhash,blocktime,version,size,vsize,weight,locktime,fee) VALUES (
+  decode('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b','hex'),
+  decode('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f','hex'),
+  to_timestamp(1231006505)::timestamp without time zone,
+  1,
+  204,
+  204,
+  816,
+  0,
+  NULL );
+
+INSERT INTO btc_block (hash,confirmations,height,version,merkleroot,"time",mediantime,nonce,bits,difficulty,chainwork,ntx,previousblockhash,nextblockhash,strippedsize,size,weight) VALUES (
+  decode('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f','hex'),
+  857809,
+  0,
+  1,
+  decode('4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b','hex'),
+  to_timestamp(1231006505)::timestamp without time zone,
+  to_timestamp(1231006505)::timestamp without time zone,
+  2083236893,
+  '1d00ffff',
+  1,
+  decode('0000000000000000000000000000000000000000000000000000000100010001','hex'),
+  1,
+  decode('','hex'),
+  decode('00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048','hex'),
+  285,
+  285,
+  1140 );
+
+COMMIT;
+```
