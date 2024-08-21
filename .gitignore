@@ -1,0 +1,6 @@
+index_btc.opam
+_build/
+data/
+*.csv
+settings
+pgpass

@@ -1,0 +1,5 @@
+(executable
+ (public_name json2pg)
+ (name json2pg)
+ (preprocess (pps lwt_ppx))
+ (libraries yojson lwt.unix))
