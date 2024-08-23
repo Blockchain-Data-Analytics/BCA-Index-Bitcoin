@@ -285,6 +285,7 @@ The programs require the following environment variables to be defined:
 * RPCSECRET
 * RPCENDPOINT
 
+(these point to the running _bitcoind_)
 
 ### List block hashes
 
@@ -375,6 +376,30 @@ SELECT txid, blockhash, blocktime, output FROM (
   SELECT tx.txid, tx.blockhash, tx.blocktime, jsonb_array_elements(tx.vout) AS output FROM btc_transaction AS tx
 ) AS subq
 WHERE subq.output #>> '{scriptPubKey,address}' = '1H3AeABb5d1uvBaa8h6uPnmkGDR1y6wmoV';
+```
+
+## Installation
+
+### OCaml preparation
+
+get the compiler and environment setup:
+```sh
+opam init --bare
+opam switch create default 5.1.1
+```
+
+then, add some libraries:
+```sh
+opam install dune utop
+opam install lwt_ppx
+opam install yojson
+opam install ezcurl-lwt
+```
+
+the code can then be compiled:
+
+```sh
+dune build
 ```
 
 ## Maintenance
