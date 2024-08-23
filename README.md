@@ -365,3 +365,26 @@ INSERT INTO btc_block (hash,confirmations,height,version,merkleroot,"time",media
 
 COMMIT;
 ```
+
+## Queries
+
+### Query for outputs on an address
+
+```sql
+SELECT txid, blockhash, blocktime, output FROM (
+  SELECT tx.txid, tx.blockhash, tx.blocktime, jsonb_array_elements(tx.vout) AS output FROM btc_transaction AS tx
+) AS subq
+WHERE subq.output #>> '{scriptPubKey,address}' = '1H3AeABb5d1uvBaa8h6uPnmkGDR1y6wmoV';
+```
+
+## Maintenance
+
+### Delete a block and all its transactions from the database
+
+```sh
+BLOCKHEIGHT=200000
+
+for Txid in $(cat data/${BLOCKHEIGHT}.json| jq -r '.result | .tx .[].txid '); do echo "DELETE FROM btc_txin WHERE txid=decode('${Txid}','hex'); DELETE FROM btc_txout WHERE txid=decode('${Txid}','hex'); DELETE FROM btc_transaction WHERE txid=decode('${Txid}','hex');" | psql; done
+
+echo "DELETE FROM btc_block WHERE height=${BLOCKHEIGHT};" | psql
+```
