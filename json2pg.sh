@@ -15,12 +15,12 @@ IFS=,
 . settings
 
 {
-	read BLOCKHEIGHT BLOCKHASH;
-	while [ -n "$BLOCKHEIGHT" ]; do
-	  echo "h=$BLOCKHEIGHT hash=$BLOCKHASH";
-      _build/default/bin/json2pg.exe -n ${BLOCKHEIGHT} -s ${BLOCKHASH} | psql
-	  read BLOCKHEIGHT BLOCKHASH;
-	 done
+  read BLOCKHEIGHT BLOCKHASH;
+  while [ -n "$BLOCKHEIGHT" ]; do
+    #echo "h=$BLOCKHEIGHT hash=$BLOCKHASH";
+    ./_build/default/bin/json2sql.exe -pg -n ${BLOCKHEIGHT} -s ${BLOCKHASH} | psql -q -b ;
+    read BLOCKHEIGHT BLOCKHASH;
+  done
 }
 
 IFS=$OLDIFS

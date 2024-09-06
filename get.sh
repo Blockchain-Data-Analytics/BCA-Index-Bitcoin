@@ -18,7 +18,7 @@ IFS=,
 	read BLOCKHEIGHT BLOCKHASH;
 	while [ -n "$BLOCKHEIGHT" ]; do
 	  echo "h=$BLOCKHEIGHT hash=$BLOCKHASH";
-	  curl --user ${RPCUSER}:${RPCSECRET} --data-binary '{"jsonrpc": "1.0", "id": "curltest", "method": "getblock", "params": ['${BLOCKHASH}', 2]}' -H 'content-type: text/plain;' -o data/${BLOCKHEIGHT}.json $RPCENDPOINT 
+	  curl --user ${RPCUSER}:${RPCSECRET} --data-binary '{"jsonrpc": "1.0", "id": "curltest", "method": "getblock", "params": ["'${BLOCKHASH}'", 2]}' -H 'content-type: text/plain;' -o data/${BLOCKHEIGHT}.json $RPCENDPOINT 
 	  read BLOCKHEIGHT BLOCKHASH;
 	 done
 }
