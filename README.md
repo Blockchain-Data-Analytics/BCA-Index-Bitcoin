@@ -314,7 +314,7 @@ The program can either read in a JSON file with argument `-f <filepath>`, or
 send a POST request to _bitcoind_ for a blockheight and blockhash.
 
 ```sh
-dune exec bin/json2pg.exe -- -n 0 -s 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+dune exec bin/json2sql.exe -- -n 0 -s 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
 ```
 
 will generate the following SQL commands:
@@ -403,6 +403,19 @@ dune build
 ```
 
 ## Maintenance
+
+### Insert pack of blocks into PostgreSQL
+
+```sh
+./lsblocks.sh -s 805000 -n 100 | ./json2pg.sh | psql -qb
+```
+
+### Transform a number of blocks to SQL and store in DuckDB
+
+```sh
+./lsblocks.sh -s 805000 -n 100 | ./json2duckdb.sh test_805000_100.db
+```
+
 
 ### Delete a block and all its transactions from the database
 

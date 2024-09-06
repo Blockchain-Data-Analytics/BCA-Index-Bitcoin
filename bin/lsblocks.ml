@@ -22,6 +22,12 @@ let config =
   Ezcurl_lwt.Config.password rpcsecret
 
   (* curl --user myusername --data-binary '{"jsonrpc": "1.0", "id": "curltest", "method": "getblockhash", "params": [1000]}' -H 'content-type: text/plain;' http://127.0.0.1:8332/ *)
+
+let get_string jsonvalue =
+  match jsonvalue with
+  | `String s -> s
+  | _ -> failwith "cannot get string from json value\n"
+
 let rec rec_list_blocks client bstart bn curn =
   if curn >= bn then
     Lwt.return_unit
@@ -35,18 +41,19 @@ let rec rec_list_blocks client bstart bn curn =
         (* let _ = Lwt_io.printlf "ok %d : %s" resp.code resp.body in *)
         if resp.code = 200 then
           let json = Yojson.Basic.from_string resp.body in
-          let blockhash = json |> Yojson.Basic.Util.member "result" |> Yojson.Basic.to_string in
-          let _ = Lwt_io.printlf "%d, %s" (curn + bstart) blockhash in
+          let blockhash = json |> Yojson.Basic.Util.member "result" |> (* Yojson.Basic.to_string *) get_string in
+          let _ = Lwt_io.printlf "%d,%s" (curn + bstart) blockhash in
           rec_list_blocks client bstart bn (curn + 1)
         else
           let m = Printf.sprintf "bad query %d at blockheight %d" resp.code (curn + bstart) in
           Lwt.fail_with m
       | Error (code, msg) ->
-        let m = Printf.sprintf "error %d : %s" (Curl.int_of_curlCode code) msg in
-        Lwt.fail_with m
+        let _ = Lwt_io.eprintlf "error %d : %s     sleeping @ %d ..." (Curl.int_of_curlCode code) msg (curn + bstart) in
+        let () = Unix.sleepf 9.5 in
+        rec_list_blocks client bstart bn curn
 
 let list_blocks bstart bn =
-  let _ = Lwt_io.printlf "blockheight, blockhash     ;;listing %d blocks from %d to %d" bn bstart (bstart + bn - 1) in
+  (* let _ = Lwt_io.printlf "blockheight, blockhash     ;;listing %d blocks from %d to %d" bn bstart (bstart + bn - 1) in *)
   let client = Ezcurl_lwt.make ~set_opts:(fun c -> Curl.set_timeout c 30) () in
   rec_list_blocks client bstart bn 0
 

@@ -1,6 +1,6 @@
 (executable
- (public_name json2pg)
- (name json2pg)
+ (public_name json2sql)
+ (name json2sql)
  (preprocess (pps lwt_ppx))
  (libraries ezcurl-lwt yojson lwt.unix))
 
