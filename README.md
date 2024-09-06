@@ -369,13 +369,55 @@ COMMIT;
 
 ## Queries
 
-### Query for outputs on an address
+### PostgreSQL query for outputs on an address
 
 ```sql
 SELECT txid, blockhash, blocktime, output FROM (
   SELECT tx.txid, tx.blockhash, tx.blocktime, jsonb_array_elements(tx.vout) AS output FROM btc_transaction AS tx
 ) AS subq
 WHERE subq.output #>> '{scriptPubKey,address}' = '1H3AeABb5d1uvBaa8h6uPnmkGDR1y6wmoV';
+```
+
+### DuckDB query for accessing values in JSON
+
+```sql
+SELECT txid, list_transform(from_json(vout, '["json"]'), x -> json_extract(json(x), ['$.n','$.value','$.scriptPubKey.address'])) FROM btc_transaction offset 102080 LIMIT 20;
+```
+
+or, we can also query over a Parquet file:
+```sql
+SELECT txid, list_transform(from_json(vout, '["json"]'), x -> json_extract(json(x), ['$.n','$.value','$.scriptPubKey.address'])) FROM read_parquet('test_805100_100-tx.parquet');
+```
+
+outputs:
+```
+┌──────────────────────┬──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│         txid         │                                                               outputs                                                                │
+│         blob         │                                                               json[][]                                                               │
+├──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ \xD42414ad47a22358…  │ [[0, 0.21, "1HBdM234dvysrQExy9JszAbAfDPbHHfSAd"], [1, 0.00189368, "bc1qa9w4zee2gkgzkeys7sh4jwqphr46cea9w2fkk9"]]                     │
+│ \x10e8250b3b477f97…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ \x040a21758a12e4cf…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ \xCDed4a35242e9c20…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ \xCFd78c32de713091…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ \xA5388cf2d7f4816a…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ Yee98ec78230b73652…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ \xA78d5a8514348b6f…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ nec96c7f36f5372231…  │ [[0, 0.00000546, "bc1qntud2mawrk7r37dq2xmuyl43stmulqcu49q3q9"]]                                                                      │
+│ j8fe9a27be4e2be090…  │ [[0, 0.00004201, "bc1pryemxv0s42h522lw099tghrzm08enxe3kwzs3sk4qjpeg8vmrnqs9audwa"], [1, 0.02546404, "bc1qf75uznflm5s9559zgxae5jawm…  │
+│ .9019c51e63953b6c5…  │ [[0, 0.0000421, "bc1pcfkw0tc8ahe36yquchtamf0hjgn8m3e2xv9cdhh5upnqpl9jl3uq43xp3z"], [1, 0.00261734, "bc1qrxjvglhn0s8j8r7e4uqecerwwd…  │
+│ \x7F94a414d5f7f3c4…  │ [[0, 0.0000421, "bc1pqr7r96trnsj06wdzcrv4gjku3277zdl2k588g768sxxd7qqnh3nqlzd4we"], [1, 0.0025614, "bc1qrxjvglhn0s8j8r7e4uqecerwwd9…  │
+│ .d8674ac646bac64e5…  │ [[0, 1.03296099, "bc1q538rrc4ahsrxaftl2xa7qwm0fztwckqugtu8wt"]]                                                                      │
+│ \x9Eaddeb34822b575…  │ [[0, 0.03460844, "bc1pwayuhsfyx2l8q98v4hxn6hdxddg57f4dpnnlmesvj6mczysc005qkn46cx"], [1, 0.0334387, "bc1qkck7nwuuje9hqh5k3l8gcmzzqh…  │
+│ cbc3f8dafdffefb2f4…  │ [[0, 0.00038855, "bc1q4yuffq8dy5z54428wvktmkvp3lf7h62exd4qkj2p7yvqtpdpnq3q2x3cs4"], [1, 0.01960121, "bc1qye8wmq42ey06z3wzyvqejdfyl…  │
+│ -6091ddfbd227a3987…  │ [[0, 0.00037618, "bc1pe3dz3wt8t26jle9e2467qn649zc9axzp9u48x85dlz3t6auesfpqzw5mfe"]]                                                  │
+│ ~d77933c781f8572b0…  │ [[0, 0.0003775, "bc1qt9fjn5xgsg0xj2yj3l0a7557tskjqdgntj7l6t"]]                                                                       │
+│ \xACc559f85c0cdb43…  │ [[0, 0.03775627, "3AACETp6XAsQ6yoSqaAgKdwJp1uLYdKfzd"], [1, 0.00038138, "39BssXyaMFLntkzfZQ4o8CS4JiWDKBAypB"], [2, 0.00006173, "39…  │
+│ \x82c1501b2e5ab8ae…  │ [[0, 0.000012, "bc1p9h459lj9cdhw3uky9x0kdp5ccm7n4q7jkkmws78gvxr7l5asldxqmqvnu7"], [1, 0.0001, "bc1p9h459lj9cdhw3uky9x0kdp5ccm7n4q7…  │
+│ \xC2759cd08e32256f…  │ [[0, 0.000012, "bc1p9d8ds2mptpzsegh457u4tvt07g70wktpc2q95me3437rdd3fxtxq0at2kn"], [1, 0.0001, "bc1p9d8ds2mptpzsegh457u4tvt07g70wkt…  │
+├──────────────────────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 20 rows                                                                                                                                           2 columns │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Installation
