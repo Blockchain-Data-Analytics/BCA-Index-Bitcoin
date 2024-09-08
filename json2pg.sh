@@ -8,11 +8,13 @@ OLDIFS=$IFS
 IFS=,
 
 
-# include settings which defines:
+# check presence of settings:
 #   RPCUSER
 #   RPCSECRET
 #   RPCENDPOINT
-. settings
+if [ -z "${RPCUSER}" ]; then echo "missing \$RPCUSER"; exit 1; fi
+if [ -z "${RPCSECRET}" ]; then echo "missing \$RPCSECRET"; exit 1; fi
+if [ -z "${RPCENDPOINT}" ]; then echo "missing \$RPCENDPOINT"; exit 1; fi
 
 {
   read BLOCKHEIGHT BLOCKHASH;
@@ -24,4 +26,3 @@ IFS=,
 }
 
 IFS=$OLDIFS
-

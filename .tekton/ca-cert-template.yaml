@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ca-cert
+  namespace: ${NAMESPACE}
+data:
+  ca.crt: <base64 of the certificate>
