@@ -4,7 +4,7 @@
 
 class transaction {
     txid: bytes32
-    hash: string64 (not needed)
+    txhash: bytes32
     version: uint32
     size: uint32 
     vsize: uint32 

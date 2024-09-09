@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: bca-idx-btc
+  namespace: ${NAMESPACE}
+spec:
+  params:
+  - name: start-blockheight
+    type: string
+    description: The blockheight to start exporting.
+  - name: num-blocks
+    type: string
+    description: The number of blocks to export.
+  workspaces:
+  - name: minio-credentials
+  - name: rpc-credentials
+  - name: ca-cert
+  steps:
+    - name: extract-btc-blocks
+      image: registry.cluster:5000/chain_index_btc:amd64v6
+      env:
+        - name: STARTBLOCKHEIGHT
+          value: $(params.start-blockheight)
+        - name: NUMBLOCKS
+          value: $(params.num-blocks)
+      script: ./export_blocks_to_duckdb.sh

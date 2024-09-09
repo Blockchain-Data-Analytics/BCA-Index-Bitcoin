@@ -4,5 +4,8 @@ data/
 *.csv
 settings
 pgpass
-tmp/
 archive/
+uml/
+out/
+.tekton/
+tmp/
