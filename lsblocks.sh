@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 # this script requests block hashes from bitcoind
 # arguments: <start blockheight> <count>
+
+set -e
 
 # check presence of settings:
 #   RPCUSER

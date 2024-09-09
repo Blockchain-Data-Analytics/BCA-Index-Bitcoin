@@ -10,9 +10,8 @@ spec:
     securityContext:
       fsGroup: 65532
       runAsUser: 1000
-    taskPodTemplate:
-      nodeSelector:
-        kubernetes.io/arch: amd64
+    nodeSelector:
+      kubernetes.io/arch: amd64
   serviceAccountName: sa-bca
   computeResources:
         requests:

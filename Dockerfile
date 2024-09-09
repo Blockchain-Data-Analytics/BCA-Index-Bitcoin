@@ -36,6 +36,7 @@ COPY --from=builder /home/bca/_build /home/bca/_build
 COPY --from=duckdb_container /home/squeak/duckdb /home/bca/.local/bin/
 
 COPY dot.profile /home/bca/.profile
+COPY duckdb /home/bca/duckdb
 
 COPY lsblocks.sh json2duckdb.sh export_blocks_to_duckdb.sh /home/bca/
 

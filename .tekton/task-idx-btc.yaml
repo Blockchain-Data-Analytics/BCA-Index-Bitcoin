@@ -17,10 +17,10 @@ spec:
   - name: ca-cert
   steps:
     - name: extract-btc-blocks
-      image: registry.cluster:5000/chain_index_btc:amd64
+      image: registry.cluster:5000/chain_index_btc:amd64v6
       env:
         - name: STARTBLOCKHEIGHT
           value: $(params.start-blockheight)
         - name: NUMBLOCKS
           value: $(params.num-blocks)
-      script: export_blocks_to_duckdb.sh
+      script: ./export_blocks_to_duckdb.sh

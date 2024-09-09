@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # this script reads records from stdin
 # a record contains: <blockheight>,<blockhash>

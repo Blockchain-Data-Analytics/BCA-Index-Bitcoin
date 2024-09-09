@@ -20,3 +20,12 @@ export NUMBLOCKS=<num>
 ```
 
 2. `envsubst <task-idx-btc-run.yaml | kubectl create -n ${NAMESPACE} -f -`
+
+
+## Testing
+
+```sh
+export NUMBLOCKS=100
+for BH in $(seq 590100 ${NUMBLOCKS} 593000); do echo $BH; export STARTBLOCKHEIGHT=$BH; envsubst <task-idx-btc-run.yaml | kubectl create -n ${NAMESPACE} -f - ; done
+```
+
