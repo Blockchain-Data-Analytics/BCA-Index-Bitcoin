@@ -16,10 +16,10 @@ spec:
   computeResources:
         requests:
           cpu: "900m"
-          memory: "999Mi"
+          memory: "1999Mi"
         limits:
-          cpu: "1500m"
-          memory: "1999Mi"    
+          cpu: "1900m"
+          memory: "3999Mi"    
   workspaces:
   - name: minio-credentials
     secret:

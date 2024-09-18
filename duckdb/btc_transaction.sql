@@ -4,7 +4,7 @@ CREATE TABLE btc_transaction
     txhash BYTEA,
     blockhash BYTEA NOT NULL,
     blocktime TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    version INTEGER NOT NULL,
+    version BIGINT NOT NULL,
     size INTEGER NOT NULL,
     vsize INTEGER NOT NULL,
     weight INTEGER NOT NULL,

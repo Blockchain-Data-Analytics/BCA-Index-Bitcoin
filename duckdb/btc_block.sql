@@ -3,7 +3,7 @@ CREATE TABLE btc_block
     hash BYTEA NOT NULL,
     confirmations INTEGER,
     height INTEGER NOT NULL,
-    version INTEGER NOT NULL,
+    version BIGINT NOT NULL,
     merkleroot BYTEA NOT NULL,
     "time" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     mediantime TIMESTAMP WITHOUT TIME ZONE NOT NULL,
