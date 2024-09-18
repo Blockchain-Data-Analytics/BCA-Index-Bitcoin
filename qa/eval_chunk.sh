@@ -7,7 +7,8 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
-STARTBLOCKHEIGHT=$1
+#STARTBLOCKHEIGHT=$1
+printf -v STARTBLOCKHEIGHT "%06u" $1
 NUMBLOCKS=$2
 
 BUCKET=idx-btc

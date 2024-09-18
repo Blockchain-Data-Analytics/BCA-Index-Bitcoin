@@ -1,4 +1,9 @@
 # docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t registry.cluster:5000/chain_index_btc:latest .
+# actual:
+# docker buildx build --platform linux/amd64 -f Dockerfile -t registry.cluster:5000/chain_index_btc:amd64v8  . --load
+# POD_NAME=$(kubectl get pods --namespace private-registry -l app=docker-registry,release=docker-registry -o jsonpath={.items[0].metadata.name})
+# kubectl -n private-registry port-forward $POD_NAME 5000:5000
+# docker push registry.cluster:5000/chain_index_btc:amd64v..
 
 FROM debian:latest AS builder
 
@@ -24,13 +29,13 @@ FROM debian:latest
 
 RUN addgroup --gid 1000 bca && adduser --disabled-password --uid 1000 --gid 1000 bca
 
-RUN apt update && apt upgrade -y && apt install -y opam bash git less vim curl pkg-config libgmp-dev libffi-dev libcurl4-gnutls-dev
+RUN apt update && apt upgrade -y && apt install -y opam bash git less vim curl jq pkg-config libgmp-dev libffi-dev libcurl4-gnutls-dev
 
 USER bca
 
 WORKDIR /home/bca
 
-COPY --from=builder /home/bca/.opam /home/bca/.opam
+#COPY --from=builder /home/bca/.opam /home/bca/.opam
 COPY --from=builder /home/bca/_build /home/bca/_build
 
 COPY --from=duckdb_container /home/squeak/duckdb /home/bca/.local/bin/

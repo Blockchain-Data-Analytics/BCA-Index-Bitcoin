@@ -17,7 +17,7 @@ spec:
   - name: ca-cert
   steps:
     - name: extract-btc-blocks
-      image: registry.cluster:5000/chain_index_btc:amd64v6
+      image: registry.cluster:5000/chain_index_btc:amd64v16
       env:
         - name: STARTBLOCKHEIGHT
           value: $(params.start-blockheight)

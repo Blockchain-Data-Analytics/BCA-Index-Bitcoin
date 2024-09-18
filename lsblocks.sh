@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # this script requests block hashes from bitcoind
 # arguments: <start blockheight> <count>
@@ -18,5 +18,5 @@ if [ $# -ne 2 ]; then
    exit 1
 fi
 
-_build/default/bin/lsblocks.exe -s $1 -n $2
+./_build/default/bin/lsblocks.exe -s $1 -n $2
 
