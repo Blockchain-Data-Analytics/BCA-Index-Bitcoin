@@ -9,3 +9,8 @@
  (name lsblocks)
  ;(preprocess (pps lwt_ppx))
  (libraries ezcurl-lwt yojson lwt.unix))
+
+(executable
+ (public_name chain_info)
+ (name chaininfo)
+ (libraries ezcurl-lwt yojson lwt.unix))

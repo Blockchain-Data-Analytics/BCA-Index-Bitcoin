@@ -1,4 +1,4 @@
-CREATE TABLE btc_transaction
+CREATE TABLE IF NOT EXISTS btc_transaction
 (
     txid BYTEA NOT NULL,
     txhash BYTEA,
