@@ -30,9 +30,9 @@ DBSTEM="$1"
 DBNAME="${DBSTEM}.db"
 if [ -e ${DBNAME} ]; then
    echo "duckdb db: ${DBNAME} already exists."
-   exit 1
+else
+   echo -e ".read duckdb/btc_block.sql \n.read duckdb/btc_transaction.sql" | duckdb ${DBNAME}
 fi
-echo -e ".read duckdb/btc_block.sql \n.read duckdb/btc_transaction.sql" | duckdb ${DBNAME}
 
 # loop through blockheight, blockhash pairs
 {

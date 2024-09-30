@@ -1,4 +1,4 @@
-CREATE TABLE btc_block
+CREATE TABLE IF NOT EXISTS btc_block
 (
     hash BYTEA NOT NULL,
     confirmations INTEGER,
