@@ -1,9 +1,12 @@
+# Copyright &copy; 2024 Alexander Diemand
+# Licensed under GPL-3; see [LICENSE](/LICENSE)
+
 # docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile -t registry.cluster:5000/chain_index_btc:latest .
-# actual:
+# with increasing version number in tag; push to private registry:
 # docker buildx build --platform linux/amd64 -f Dockerfile -t registry.cluster:5000/chain_index_btc:amd64v8  . --load
 # POD_NAME=$(kubectl get pods --namespace private-registry -l app=docker-registry,release=docker-registry -o jsonpath={.items[0].metadata.name})
 # kubectl -n private-registry port-forward $POD_NAME 5000:5000
-# docker push registry.cluster:5000/chain_index_btc:amd64v..
+# docker push registry.cluster:5000/chain_index_btc:amd64v8
 
 FROM debian:latest AS builder
 

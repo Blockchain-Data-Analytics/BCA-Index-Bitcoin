@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright &copy; 2024 Alexander Diemand
+# Licensed under GPL-3; see [LICENSE](/LICENSE)
+
 # this script reads records from stdin
 # a record contains: <blockheight>,<blockhash>
 # one by line

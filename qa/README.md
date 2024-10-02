@@ -1,3 +1,6 @@
+Copyright &copy; 2024 Alexander Diemand
+
+Licensed under GPL-3; see [LICENSE](/LICENSE)
 
 # Quality Assurance
 
@@ -75,15 +78,13 @@ for PARQUET_FP in $(cat parquet.lst); do
   fi
   sleep 0
 done
-
-
 ```
 
 ## Evaluate conscutive sequence of block heights are available
 
 ```sql
 D .timer on
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_2[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_2[0-9][0-9][0-9]00_100-block.parquet') );
 ┌──────────────┐
 │ count_star() │
 │    int64     │
@@ -95,7 +96,7 @@ Run Time (s): real 0.620 user 0.288321 sys 0.183165
 
 ```sql
 D .timer on
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_3[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_3[0-9][0-9][0-9]00_100-block.parquet') );
 ┌──────────────┐
 │ count_star() │
 │    int64     │
@@ -103,7 +104,7 @@ D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/
 │        99800 │
 └──────────────┘
 Run Time (s): real 6.970 user 3.091380 sys 2.261909
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_4[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_4[0-9][0-9][0-9]00_100-block.parquet') );
 ┌──────────────┐
 │ count_star() │
 │    int64     │
@@ -111,7 +112,7 @@ D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/
 │        89300 │
 └──────────────┘
 Run Time (s): real 8.263 user 4.322991 sys 3.604510
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_5[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_5[0-9][0-9][0-9]00_100-block.parquet') );
 ┌──────────────┐
 │ count_star() │
 │    int64     │
@@ -119,7 +120,7 @@ D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/
 │        91000 │
 └──────────────┘
 Run Time (s): real 8.437 user 4.979029 sys 3.812738
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_6[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_6[0-9][0-9][0-9]00_100-block.parquet') );
 ┌──────────────┐
 │ count_star() │
 │    int64     │
@@ -127,7 +128,7 @@ D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/
 │        96400 │
 └──────────────┘
 Run Time (s): real 8.762 user 5.052553 sys 3.888465
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_7[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_7[0-9][0-9][0-9]00_100-block.parquet') );
 ┌──────────────┐
 │ count_star() │
 │    int64     │
@@ -135,9 +136,9 @@ D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/
 │        75400 │
 └──────────────┘
 Run Time (s): real 6.640 user 3.907732 sys 2.826131
-D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet('/home/alex/MFS/vidx-btc/btc_8[0-9][0-9][0-9]00_100-block.parquet') );
+D SELECT COUNT(*) FROM ( SELECT DISTINCT hash FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_8[0-9][0-9][0-9]00_100-block.parquet') );
 Run Time (s): real 0.368 user 0.025090 sys 0.100748
-IO Error: No files found that match the pattern "/home/alex/MFS/vidx-btc/btc_8[0-9][0-9][0-9]00_100-block.parquet"
+IO Error: No files found that match the pattern "${HOME}/MFS/vidx-btc/btc_8[0-9][0-9][0-9]00_100-block.parquet"
 ```
 
 ### Find missing blocks
@@ -145,7 +146,7 @@ IO Error: No files found that match the pattern "/home/alex/MFS/vidx-btc/btc_8[0
 ```sql
 .mode csv
 
-SELECT height, height - hdiff AS last_height, hdiff FROM (SELECT height, height - (lag(height) OVER (ORDER BY height ASC)) AS hdiff FROM read_parquet('/home/alex/MFS/vidx-btc/btc_3[0-9][0-9][0-9]00_100-block.parquet')) WHERE hdiff > 1;
+SELECT height, height - hdiff AS last_height, hdiff FROM (SELECT height, height - (lag(height) OVER (ORDER BY height ASC)) AS hdiff FROM read_parquet(getenv('HOME') || '/MFS/vidx-btc/btc_3[0-9][0-9][0-9]00_100-block.parquet')) WHERE hdiff > 1;
 ┌────────┬─────────────┬───────┐
 │ height │ last_height │ hdiff │
 │ int32  │    int32    │ int32 │

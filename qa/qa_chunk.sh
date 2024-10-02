@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Copyright &copy; 2024 Alexander Diemand
+# Licensed under GPL-3; see [LICENSE](/LICENSE)
+
 set -e
 
 if [ $# -lt 2 ]; then
