@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Copyright &copy; 2024 Alexander Diemand
+# Licensed under GPL-3; see [LICENSE](/LICENSE)
+
+# This script is called by a Prometheus exporter to capture metrics on the indexed blockchain data
+
 if [ -z "${PQ_ROOT}" ]; then echo "missing \$PQ_ROOT"; exit 1; fi
 if [ ! -d "${PQ_ROOT}" ]; then echo "missing \$PQ_ROOT at $PQ_ROOT"; exit 1; fi
 
@@ -18,4 +23,3 @@ echo "# Latest block at height ${DB_MAX_HEIGHT} from ${BLOCK_TIME}"
 echo "btc_latest_block_height ${DB_MAX_HEIGHT}"
 echo "btc_latest_block_time ${EPOCH}"
 echo "btc_latest_block_age $((NOW - EPOCH))"
-

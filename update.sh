@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# this script requests block hashes from bitcoind
-# arguments: <start blockheight> <count>
+# Copyright &copy; 2024 Alexander Diemand
+# Licensed under GPL-3; see [LICENSE](/LICENSE)
+
+# this script queries bitcoind for the current block height
+# and updates a local parquet file with the newest blocks
 
 set -e
 
@@ -11,14 +14,13 @@ if [ -e ${LOCKFILE} ]; then
     sleep 3
     exit 1
 fi
-
 touch ${LOCKFILE}
 
 # check presence of settings:
-#   RPCUSER
-#   RPCSECRET
-#   RPCENDPOINT
-#   PQ_ROOT
+#   RPCUSER      ; bitcoind RPC connection credentials
+#   RPCSECRET    ; dito
+#   RPCENDPOINT  ; the URL for connecting to the bitcoind daemon
+#   PQ_ROOT      ; path to the parquet files
 if [ -z "${RPCUSER}" ]; then echo "missing \$RPCUSER"; exit 1; fi
 if [ -z "${RPCSECRET}" ]; then echo "missing \$RPCSECRET"; exit 1; fi
 if [ -z "${RPCENDPOINT}" ]; then echo "missing \$RPCENDPOINT"; exit 1; fi
@@ -83,6 +85,7 @@ time { ./lsblocks.sh ${UPDATE_HEIGHT} ${CHUNK_LENGTH} | ./json2duckdb.sh ${DBSTE
 
 # QA
 
+# expect at least one tx per block - otherwise something went wrong
 JSON_TXCOUNT=$(duckdb -json ${DBSTEM}.db -c 'SELECT COUNT(*) AS txcount FROM (SELECT DISTINCT txhash FROM btc_transaction);')
 echo $JSON_TXCOUNT
 TXCOUNT=$(echo $JSON_TXCOUNT | jq -r '.[0].txcount')
@@ -91,6 +94,7 @@ if [ ${TXCOUNT} -lt ${EXPECTED_LENGTH} ]; then
     exit 1
 fi
 
+# check the count of the updated blocks
 JSON_BLCOUNT=$(duckdb -json ${DBSTEM}.db -c 'SELECT COUNT(*) AS blockcount FROM (SELECT DISTINCT hash FROM btc_block);')
 echo $JSON_BLCOUNT
 BLCOUNT=$(echo $JSON_BLCOUNT | jq -r '.[0].blockcount')
@@ -99,6 +103,7 @@ if [ ${BLCOUNT} -ne ${EXPECTED_LENGTH} ]; then
     exit 1
 fi
 
+# check that there are no gaps in blocks' heights; only works for full chunks
 JSON_BLCOVERAGE=$(duckdb -json ${DBSTEM}.db -c "SELECT SUM(delta) AS bncount FROM (SELECT (row_number() OVER (ORDER BY height)) - (height - ${UPDATE_HEIGHT}) AS delta FROM btc_block ORDER BY height ASC);")
 echo $JSON_BLCOVERAGE
 BLCOVERAGE=$(echo $JSON_BLCOVERAGE | jq -r '.[0].bncount')
@@ -107,6 +112,7 @@ if [[ ${CHUNK_LENGTH} -eq 100 && ${BLCOVERAGE} -ne ${EXPECTED_LENGTH} ]]; then
     exit 1
 fi
 
+# the blockhashes from transactions should match the ones in the block table
 JSON_TXCOVERAGE=$(duckdb -json ${DBSTEM}.db -c "SELECT COUNT(*) AS txbhcount FROM (SELECT DISTINCT blockhash FROM btc_transaction AS ttx JOIN (SELECT hash FROM btc_block) AS tbl ON (tbl.hash = ttx.blockhash));")
 echo $JSON_TXCOVERAGE
 TXCOVERAGE=$(echo $JSON_TXCOVERAGE | jq -r '.[0].txbhcount')

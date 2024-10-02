@@ -1,4 +1,12 @@
+Copyright &copy; 2024 Alexander Diemand
+
+Licensed under GPL-3; see [LICENSE](/LICENSE)
+
+
 # Chain index of Bitcoin (BTC)
+
+This repository contains the program code and scripts to index Bitcoin's mainchain from a running and synced _bitcoind_.
+
 
 ## Overview
 

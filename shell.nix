@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     nativeBuildInputs = [
         cmake
         git
-        gnused
+        gnused jq
         gcc
         opam m4
         pkg-config
